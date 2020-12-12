@@ -5,26 +5,52 @@ gmt set FONT_LABEL 12p
 gmt set MAP_TITLE_OFFSET 5p
 gmt set FONT_ANNOT 10p
 #
-modefile=mode_fun.asc
-output=mode_fun.ps
+modefile=$1.asc
+output=$1.ps
 #
 r1=0
 r2=6371
 #
-max1=7
-min1=-7
-max2=2000
-min2=-2000
-max3=7
-min3=-7
-max4=5000
-min4=-5000
+vmax1=$(echo $(tail -n +2 $modefile | awk '{a=a*a>$2*$2?a:$2}END{print a}')| awk '{printf ("%.0f",sqrt($1*$1)+1)}')
+if (($vmax1 >= 8)); then
+max1=$[(vmax1/10+1)*10]
+tick1=$[max1/4]
+else
+max1=8
+tick1=1
+fi
+mark1=$[tick1*2]
+min1=-$max1
+echo vmax1=$vmax1,max1=$max1,tick1=$tick1,mark1=$mark1
+vmax2=$(echo $(tail -n +2 $modefile | awk '{a=a*a>$3*$3?a:$3}END{print a}')| awk '{printf ("%.0f",sqrt($1*$1)+1)}')
+if (($vmax2 >= 1000)); then
+max2=$[(vmax2/500+1)*500]
+elif (($vmax2 >= 500)); then
+max2=1000
+elif (($vmax2 >= 200)); then
+max2=500
+elif (($vmax2 >= 100)); then
+max2=200
+elif (($vmax2 >= 50)); then
+max2=100
+elif (($vmax2 >= 20)); then
+max2=50
+elif (($vmax2 >= 10)); then
+max2=20
+else
+max2=10
+fi
+min2=-$max2
+tick2=$[max2/4]
+mark2=$[tick2*2]
+echo vmax2=$vmax2,max2=$max2,tick2=$tick2,mark2=$mark2
 fsize=3i/4i
+
 #
 #------------------------------------
 # plot U(r)
-gmt psbasemap -R$min1/$max1/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa2f1+l"U(r)" -P -K -X+2.7 -Y+15.5 > $output
-awk '{print $2, $1/1000}' $modefile | gmt psxy -JX -R$min1/$max1/$r1/$r2 -K -O -W2 -B -P >> $output
+gmt psbasemap -R$min1/$max1/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa${mark1}f${tick1}+l"U(r)" -P -K -X+2.7 -Y+15.5 > $output
+tail -n +2 $modefile | awk '{print $2, $1/1000}' | gmt psxy -JX -R$min1/$max1/$r1/$r2 -K -O -W2 -B -P >> $output
 #
 gmt psxy -JX -R -W3:- -O -K -B -P << END >> $output
 0. 0.
@@ -33,35 +59,79 @@ END
 #
 #awk '{if($1 == "Mode") print 0., 6600., $3 $4 $5}' $modefile | gmt pstext -JX -R -O >> $output
 gmt pstext -JX -R -F+f24p,1 -P -K -O -N << EOF >> $output
-0 6800 $(awk 'NR==1{print $3$4$5}' mode_fun.asc)
+0 6800 $(awk 'NR==1{print $3$4$5}' $modefile)
 EOF
 #-----------------------------------
 # plot dU/dr
-gmt psbasemap -R$min2/$max2/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa1000f500+l"dU(r)/dr" -P -K -O -X+10.0 -Y+0.0>> $output
-awk '{print $3, $1/1000}' $modefile | gmt psxy -JX -R$min2/$max2/$r1/$r2 -K -O -W2 -B -P >> $output
-gmt psxy -JX -R -W3:- -O -K -B -P << END >> $output
+gmt psbasemap -R$min2/$max2/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa${mark2}f${tick2}+l"dU(r)/dr" -P -K -O -X+10.0 -Y+0.0>> $output
+tail -n +2 $modefile | awk '{print $3, $1/1000}' | gmt psxy -JX -R$min2/$max2/$r1/$r2 -K -O -W2 -B -P >> $output
+if [[ $modefile =~ 'S' ]];then
+flagk=-K
+else
+flagk=
+fi
+gmt psxy -JX -R -W3:- -O $flagk -B -P << END >> $output
 0. 0.
 0. 6371.
 END
 #-----------------------------------
+
+if [[ $modefile =~ 'S' ]];then
+
+vmax3=$(echo $(tail -n +2 $modefile | awk '{a=a*a>$4*$4?a:$4}END{print a}')| awk '{printf ("%.0f",sqrt($1*$1)+1)}')
+if (($vmax1 >= 8)); then
+    max3=$[(vmax3/10+1)*10]
+    tick3=$[max3/4]
+    else
+    max3=8
+    tick3=1
+fi
+mark3=$[tick3*2]
+min3=-$max3
+echo vmax3=$vmax3,max3=$max3,tick3=$tick3,mark3=$mark3
+vmax4=$(echo $(tail -n +2 $modefile | awk '{a=a*a>$5*$5?a:$5}END{print a}')| awk '{printf ("%.0f",sqrt($1*$1)+1)}')
+if (($vmax4 >= 1000)); then
+    max4=$[(vmax4/500+1)*500]
+elif (($vmax4 >= 500)); then
+    max4=1000
+elif (($vmax4 >= 200)); then
+    max4=500
+elif (($vmax4 >= 100)); then
+    max4=200
+elif (($vmax4 >= 50)); then
+    max4=100
+elif (($vmax4 >= 20)); then
+    max4=50
+elif (($vmax4 >= 10)); then
+    max4=20
+else
+    max4=10
+fi
+min4=-$max4
+tick4=$[max4/4]
+mark4=$[tick4*2]
+echo vmax4=$vmax4,max4=$max4,tick4=$tick4,mark4=$mark4
+
 # plot V(r)
-gmt psbasemap -R$min3/$max3/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa2f1+l"V(r)" -P -K -O -X-10.0 -Y-12.2 >> $output
-awk '{print $4, $1/1000}' $modefile | gmt psxy -JX -R$min3/$max3/$r1/$r2 -K -O -W2 -B -P >> $output
+gmt psbasemap -R$min3/$max3/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa${mark3}f${tick3}+l"V(r)" -P -K -O -X-10.0 -Y-12.2 >> $output
+tail -n +2 $modefile | awk '{print $4, $1/1000}' | gmt psxy -JX -R$min3/$max3/$r1/$r2 -K -O -W2 -B -P >> $output
 #
 gmt psxy -JX -R -W3:- -O -K -B -P << END >> $output
 0. 0.
 0. 6371.
 END
 gmt pstext -JX -R -F+f12p,1 -P -K -O -N << EOF >> $output
-8 -1200 $(awk 'NR==1{print "Eigf="$6 ", Gv="$7 ", Q="$8 ", Err=" $9}' mode_fun.asc)
+8 -1200 $(awk 'NR==1{print "Eigf="$6 ", Gv="$7 ", Q="$8 ", Err=" $9}' $modefile)
 EOF
 #-----------------------------------
 # plot dV/dr
-gmt psbasemap -R$min4/$max4/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa2000f1000+l"dV(r)/dr" -P -K -O -X+10.0 -Y+0.0>> $output
-awk '{print $5, $1/1000}' $modefile | gmt psxy -JX -R$min4/$max4/$r1/$r2 -K -O -W2 -B -P >> $output
+gmt psbasemap -R$min4/$max4/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa${mark4}f${tick4}+l"dV(r)/dr" -P -K -O -X+10.0 -Y+0.0>> $output
+tail -n +2 $modefile | awk '{print $5, $1/1000}' | gmt psxy -JX -R$min4/$max4/$r1/$r2 -K -O -W2 -B -P >> $output
 gmt psxy -JX -R -W3:- -O -B -P << END >> $output
 0. 0.
 0. 6371.
 END
+
+fi
 #
 gmt psconvert -Tf -A $output
