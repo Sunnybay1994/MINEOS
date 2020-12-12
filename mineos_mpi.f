@@ -72,7 +72,7 @@ c   Get the command-line arguments.
 	read(buffer(10),*) crit_err
 	
         CALL check_dir(modelpath)
-	modelfile=TRIM(modelpath)//TRIM(modelname)//'.card'
+	modelfile=TRIM(modelpath)//TRIM(modelname)
 	CALL check_dir(tablepath)
 	
 c   Create the output directory
