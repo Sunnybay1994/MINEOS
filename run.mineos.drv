@@ -11,10 +11,10 @@ echo Running mineos_drv
 #
 GRAV="2000."
 LMIN="1"
-LMAX="10"
+LMAX="1000"
 EPS="1.d-7"
 FMIN="-1."
-FMAX="10.5"
+FMAX="51.5"
 CHKERR="1.d-2"
 #
 #
