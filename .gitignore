@@ -21,6 +21,9 @@ read_mineos
 # gmt files
 gmt.conf
 gmt.history
+# results
+*.fun
+*.fre
 
 ## C++ and Fortran
 # Prerequisites
