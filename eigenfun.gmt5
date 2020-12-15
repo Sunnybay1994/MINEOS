@@ -46,10 +46,19 @@ mark2=$[tick2*2]
 echo vmax2=$vmax2,max2=$max2,tick2=$tick2,mark2=$mark2
 fsize=3i/4i
 
+if [[ $modefile =~ 'T' ]];then
+xlabel1="W(r)"
+xlabel2="dW(r)/dr"
+else
+xlabel1="U(r)"
+xlabel2="dU(r)/dr"
+fi
+echo $xlabel1
+
 #
 #------------------------------------
 # plot U(r)
-gmt psbasemap -R$min1/$max1/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa${mark1}f${tick1}+l"U(r)" -P -K -X+2.7 -Y+15.5 > $output
+gmt psbasemap -R$min1/$max1/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa${mark1}f${tick1}+l"$xlabel1" -P -K -X+2.7 -Y+15.5 > $output
 tail -n +2 $modefile | awk '{print $2, $1/1000}' | gmt psxy -JX -R$min1/$max1/$r1/$r2 -K -O -W2 -B -P >> $output
 #
 gmt psxy -JX -R -W3:- -O -K -B -P << END >> $output
@@ -71,7 +80,7 @@ EOF
 fi
 #-----------------------------------
 # plot dU/dr
-gmt psbasemap -R$min2/$max2/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa${mark2}f${tick2}+l"dU(r)/dr" -P -K -O -X+10.0 -Y+0.0>> $output
+gmt psbasemap -R$min2/$max2/$r1/$r2 -JX$fsize -BWSne -Bya1000f500+l"r (km)" -Bxa${mark2}f${tick2}+l"$xlabel2" -P -K -O -X+10.0 -Y+0.0>> $output
 tail -n +2 $modefile | awk '{print $3, $1/1000}' | gmt psxy -JX -R$min2/$max2/$r1/$r2 -K -O -W2 -B -P >> $output
 gmt psxy -JX -R -W3:- -O $flagk -B -P << END >> $output
 0. 0.
