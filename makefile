@@ -1,8 +1,6 @@
 #
-OFLAGS = gfortran  -ffixed-line-length-132 -fno-automatic -w -c -o
-PFLAGS = gfortran  -ffixed-line-length-132 -fno-automatic -w -o
-#OFLAGS = gfortran -g -O2 -c -o
-#PFLAGS = gfortran -g -O2 -o
+OFLAGS = ifort -O4 -c -132 -zero -save -o
+PFLAGS = ifort -O4    -132 -zero -save -o
 MPIOFLAGS = mpiifort -O4 -c -132 -zero -save -o
 MPIPFLAGS = mpiifort -O4    -132 -zero -save -o
 #
