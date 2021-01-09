@@ -16,6 +16,7 @@ read_mineos
 *.err
 # figure files
 *.asc
+*.ASC
 *.ps
 *.pdf
 # gmt files
@@ -24,6 +25,8 @@ gmt.history
 # results
 *.fun
 *.fre
+# input files
+*.in
 
 ## C++ and Fortran
 # Prerequisites
